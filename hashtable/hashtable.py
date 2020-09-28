@@ -21,7 +21,11 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        self.capacity = capacity
+        if self.capacity < 8:
+            self.capacity = 8
+        self.hash_data = [None] * capacity
+        
 
 
     def get_num_slots(self):
@@ -34,7 +38,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return len(self.hash_data)
 
 
     def get_load_factor(self):
