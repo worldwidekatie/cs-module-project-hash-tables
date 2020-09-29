@@ -11,6 +11,54 @@ class HashTableEntry:
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
+class LinkedList:
+	def __init__(self):
+		self.head = None
+
+	def insert_at_head(self, node):
+		node.next = self.head
+		self.head = node
+
+	def find_key(self, key):
+		cur = self.head
+
+		while cur is not None:
+			if cur.key == key:
+				return cur
+
+			cur = cur.next
+
+		# If we get here, it's not in the list
+		return None
+		
+	def delete(self, key):
+
+		# Special case of empty list​
+		if self.head is None:
+			return None
+
+		# Special case of deleting the head of the list​
+		if self.head.key == key:
+			old_head = self.head
+			self.head = self.head.next
+			old_head.next = None
+			return old_head
+
+		# General case​
+		prev = self.head
+		cur = self.head.next
+
+		while cur is not None:
+			if cur.key == key:
+				prev.next = cur.next
+				cur.next = None
+				return cur
+
+			prev = prev.next
+			cur = cur.next
+		# If we get here, we didn't find it
+		return None
+			
 
 class HashTable:
     """
@@ -22,9 +70,8 @@ class HashTable:
 
     def __init__(self, capacity):
         self.capacity = capacity
-        if self.capacity < 8:
-            self.capacity = 8
-        self.hash_data = [None] * capacity
+        self.data = [LinkedList()] * self.capacity
+        self.items = 0
         
 
 
@@ -38,7 +85,7 @@ class HashTable:
 
         Implement this.
         """
-        return len(self.hash_data)
+        return len(self.data)
 
 
     def get_load_factor(self):
@@ -47,7 +94,8 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        load_factor = self.items / self.capacity
+        return load_factor
 
 
     def fnv1(self, key):
@@ -66,7 +114,11 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
+        bytes_list = str(key).encode()
+        total = 0
+        for b in bytes_list:
+            total += b
+        return total
 
 
     def hash_index(self, key):
@@ -85,7 +137,20 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        ll = self.data[self.hash_index(key)]
+        if ll.head == None:
+            ll.head = HashTableEntry(key, value)
+            self.items += 1
+            if self.get_load_factor() > 0.7:
+                self.resize(self.capacity*2)
+        elif ll.find_key(key) == None:
+            ll.insert_at_head(HashTableEntry(key, value))
+            self.items += 1
+            if self.get_load_factor() > 0.7:
+                self.resize(self.capacity*2)
+        else:
+            old_entry = ll.find_key(key)
+            old_entry.value = value
 
 
     def delete(self, key):
@@ -96,8 +161,14 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        ll = self.data[self.hash_index(key)]
+        var = ll.delete(key)
+        if var == None:
+            print("Warning, can't delete because it doesn't exist.")
+            return None        
+        else:
+            self.items -= 1
+            return var
 
     def get(self, key):
         """
@@ -107,19 +178,41 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        ll = self.data[self.hash_index(key)]
+        if ll.find_key(key) == None:
+            return None
+        else:
+            return ll.find_key(key).value
 
 
     def resize(self, new_capacity):
+    #def resize(self):
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
 
         Implement this.
         """
-        # Your code here
+        #if self.get_load_factor() > 0.7:
+        old_data = self.data
+        self.items = 0
+        self.capacity = new_capacity
+        self.data = [LinkedList()] * self.capacity
+        for i in old_data:
+            cur = i.head
+            while cur != None:
+                self.put(cur.key, cur.value)
+                cur = cur.next
 
 
+# ht = HashTable(8)
+# print(ht.data)
+# ht.put("line_1", "'Twas brillig, and the slithy toves")
+# print(ht.get("line_1").value)
+# print(ht.items)
+# ht.delete("line_1")
+# print(ht.get("line_1").value)
+# print(ht.items)
 
 if __name__ == "__main__":
     ht = HashTable(8)

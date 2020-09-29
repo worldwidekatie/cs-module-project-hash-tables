@@ -1,6 +1,8 @@
 import unittest
 
 from hashtable import HashTable
+from hashtable import HashTableEntry
+from hashtable import LinkedList
 
 
 class TestHashTable(unittest.TestCase):
