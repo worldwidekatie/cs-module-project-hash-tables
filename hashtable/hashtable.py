@@ -117,20 +117,32 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
+        hash_ = 5381
+        bytes_list = str(key).encode()
+        for b in bytes_list:
+            hash_ = ((hash_ << 5) + hash_) + b
+        return hash_
+    
+    def naive(self, key):
+        """
+        DJB2 hash, 32-bit
+
+        Implement this, and/or FNV-1.
+        """
         bytes_list = str(key).encode()
         total = 0
         for b in bytes_list:
             total += b
         return total
 
-
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        return self.fnv1(key) % self.capacity
-        #return self.djb2(key) % self.capacity
+        #return self.naive(key) % self.capacity
+        #return self.fnv1(key) % self.capacity
+        return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
