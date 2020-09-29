@@ -183,6 +183,8 @@ class HashTable:
             return None        
         else:
             self.items -= 1
+            if self.get_load_factor() < 0.2:
+                self.small_resize()
             return var
 
     def get(self, key):
@@ -219,6 +221,16 @@ class HashTable:
                 self.put(cur.key, cur.value)
                 cur = cur.next
 
+    def small_resize(self):
+        old_data = self.data
+        self.items = 0
+        self.capacity = self.capacity // 2
+        self.data = [LinkedList()] * self.capacity
+        for i in old_data:
+            cur = i.head
+            while cur != None:
+                self.put(cur.key, cur.value)
+                cur = cur.next
 
 # ht = HashTable(8)
 # print(ht.data)
@@ -263,3 +275,16 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+    old_capacity = ht.get_num_slots()
+    ht.delete("line_3")
+    ht.delete("line_4")
+    ht.delete("line_5")
+    ht.delete("line_6")
+    ht.delete("line_7")
+    ht.delete("line_8")
+    ht.delete("line_9")
+    ht.delete("line_10")
+    ht.delete("line_11")
+    ht.delete("line_12")
+    new_capacity = ht.get_num_slots()
+    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
