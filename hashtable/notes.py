@@ -7,7 +7,7 @@ def hash_function(s):
     """Naive hashing function don't use in production"""
     # This is bad because it has collisions
     # e.g. Goats and oGats are the same number
-    bytes_list = s.encode()
+    bytes_list = str(s).encode()
     total = 0
     for b in bytes_list:
         total += b
@@ -34,3 +34,6 @@ put("Beej!", "Hello, world!")
 print(get("Beej!")) # should print hello world
 print(hash_data)
 print(get("Goats"))
+
+
+
